@@ -2,8 +2,8 @@
 // Vimotia storage
 // ==========================================================================
 
-import is from "./utils/is";
-import { extend } from "./utils/objects";
+import is from "./is";
+import { extend } from "./objects";
 
 class Storage {
     constructor(player) {
