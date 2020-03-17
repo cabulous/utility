@@ -40,3 +40,19 @@ export function getProductId() {
 
     return window.meta.product.id;
 }
+
+export function getLocale(aPath) {
+    const path = aPath || window.location.pathname;
+    let pathParts = path.split('/');
+    pathParts = pathParts.splice(1, pathParts.length);
+
+    const localeRegexCase1 = /^[a-zA-Z]{2}$/;
+    const localeRegexCase2 = /^[a-zA-Z]{2}-[a-zA-Z]{2}$/;
+    const locale = pathParts[0].match(localeRegexCase1) || pathParts[0].match(localeRegexCase2);
+
+    if (locale === null) {
+        return null;
+    }
+
+    return locale[0];
+}

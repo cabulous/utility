@@ -50,9 +50,15 @@ export function setAttributes(element, attributes) {
 }
 
 // Create a Document Fragment
-export function createElement(type, attributes, text) {
+export function createElement(type, attributes, text, isSvgType) {
     // Create a new <element>
-    const element = document.createElement(type);
+    let element;
+
+    if (isSvgType) {
+        element = document.createElementNS("http://www.w3.org/2000/svg", type);
+    } else {
+        element = document.createElement(type);
+    }
 
     // Set all passed attributes
     if (is.object(attributes)) {
