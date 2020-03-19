@@ -3,7 +3,7 @@
 // Unfortunately, due to mixed support, UA sniffing is required
 // ==========================================================================
 
-const browser = {
+export const browser = {
     isIPhone: /(iPhone|iPod)/gi.test(navigator.platform),
     isIos: /(iPad|iPhone|iPod)/gi.test(navigator.platform),
     // Internet Explorer 6-11
@@ -28,4 +28,10 @@ const browser = {
     isWebkit: 'WebkitAppearance' in document.documentElement.style && !/Edge/.test(navigator.userAgent),
 };
 
-export default browser;
+export const breakpoint = {
+    phone: {max: 599},
+    tabletPortrait: {min: 600, max: 899},
+    tabletLandscape: {min: 900, max: 1199},
+    desktop: {min: 1200, max: 1799},
+    bigDesktop: {min: 1800},
+};
