@@ -9,7 +9,8 @@ export const browser = {
     // Internet Explorer 6-11
     isIE: /* @cc_on!@ */ false || !!document.documentMode,
     // Edge 20+
-    isEdge: window.navigator.userAgent.includes('Edge') || (!browser.isIE && !!window.StyleMedia),
+    isEdge: window.navigator.userAgent.includes('Edge') ||
+        (!(/* @cc_on!@ */ false || !!document.documentMode) && !!window.StyleMedia),
     // Opera 8.0+
     isOpera: (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0,
     // Firefox 1.0+
@@ -21,17 +22,20 @@ export const browser = {
     // Chrome 1 - 79
     isChrome: !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime),
     // Edge (based on chromium) detection
-    isEdgeChromium: browser.isChrome && (navigator.userAgent.indexOf("Edg") != -1),
+    isEdgeChromium: (!!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)) &&
+        (navigator.userAgent.indexOf("Edg") != -1),
     // Blink engine detection
-    isBlink: (browser.isChrome || browser.isOpera) && !!window.CSS,
+    isBlink: ((!!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)) ||
+        ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)) &&
+        !!window.CSS,
     // Webkit engine detection
     isWebkit: 'WebkitAppearance' in document.documentElement.style && !/Edge/.test(navigator.userAgent),
 };
 
 export const breakpoint = {
-    phone: {max: 599},
-    tabletPortrait: {min: 600, max: 899},
-    tabletLandscape: {min: 900, max: 1199},
-    desktop: {min: 1200, max: 1799},
-    bigDesktop: {min: 1800},
+    phone: { max: 599 },
+    tabletPortrait: { min: 600, max: 899 },
+    tabletLandscape: { min: 900, max: 1199 },
+    desktop: { min: 1200, max: 1799 },
+    bigDesktop: { min: 1800 },
 };
