@@ -3,13 +3,13 @@
 // Using XHR to avoid issues with older browsers
 // ==========================================================================
 
-export default function fetch(url, responseType = 'text') {
+export function fetchData(url, responseType = 'text') {
     return new Promise((resolve, reject) => {
         try {
             const request = new XMLHttpRequest();
 
             // Check for CORS support
-            if (!('withCredentials' in request)) {
+            if (!( 'withCredentials' in request )) {
                 return;
             }
 
@@ -39,4 +39,18 @@ export default function fetch(url, responseType = 'text') {
             reject(e);
         }
     });
-};
+}
+
+export async function postData(url = '', data = {}) {
+    const response = await fetch(url, {
+        method: 'POST',
+        cache: 'no-cache',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    return response.json();
+}

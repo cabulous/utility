@@ -56,3 +56,43 @@ export function getLocale(aPath) {
 
     return locale[0];
 }
+
+export function getAddToCartForms() {
+    return Array.from(document.getElementsByTagName('form'))
+        .filter(form => {
+            return form.action.includes('cart') || form.action.includes('checkout');
+        });
+}
+
+export function isProductPage() {
+    return window.location.href.toLowerCase().indexOf('/products/') > -1;
+}
+
+export function isCollectionpage() {
+    return window.location.href.toLowerCase().indexOf('/collections') > -1;
+}
+
+export function isCartPage() {
+    return window.location.href.toLowerCase().indexOf('/cart') > -1;
+}
+
+export function isCheckoutPage() {
+    return window.location.href.toLowerCase().indexOf('/checkouts/') > -1;
+}
+
+export function isCheckoutShippingPaymentPage() {
+    return window.location.href.toLowerCase().indexOf('step=payment_method') > -1
+        || window.location.href.toLowerCase().indexOf('step=shipping_method') > -1;
+}
+
+export function isThankYouPage() {
+    const {pathname} = window.location;
+    return (pathname.indexOf('checkout') !== -1) && (pathname.indexOf('thank_you') !== -1); // for shopify_plus
+}
+
+export function isHomepage(aPath) {
+    const path = aPath || window.location.pathname;
+    const locale = getLocale(path);
+
+    return path === '/' || path === `/${locale}` || path === `/${locale}/`;
+}

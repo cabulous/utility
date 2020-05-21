@@ -33,3 +33,12 @@ export function formatTime(time = 0, displayHours = false, inverted = false) {
     // Render
     return `${inverted && time > 0 ? '-' : ''}${hours}${format(mins)}:${format(secs)}`;
 }
+
+export function leadingZeros(num, length) {
+    const digitLength = length || 2;
+    const digit = String(num);
+    if (digit.length > digitLength) {
+        return digit;
+    }
+    return (Array(digitLength + 1).join('0') + digit).substr(-digitLength);
+}
