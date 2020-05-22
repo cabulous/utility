@@ -1,0 +1,220 @@
+.ht-tms--float {
+  position: fixed;
+  top: auto;
+  right: 20px;
+  bottom: 20px;
+  left: auto;
+  z-index: 3; // 3 works for most cases
+
+  &.ht-tms--float-top {
+    top: 20px;
+    bottom: auto;
+  }
+
+  &.ht-tms--float-bottom {
+    top: auto;
+    bottom: 20px;
+  }
+
+  &.ht-tms--float-left {
+    left: 20px;
+    right: auto;
+  }
+
+  &.ht-tms--float-right {
+    left: auto;
+    right: 20px;
+  }
+}
+
+.ht-tms-dropdown {
+  display: inline-block;
+  list-style: none;
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  color: var(--tms-selector-color);
+  font-family: inherit;
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0, 0, 0.38, 0.9);
+  z-index: 1000000;
+}
+
+.ht-tms-dropdown.ht-tms-ready {
+  opacity: 1;
+}
+
+.ht-tms-dropdown__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+svg.ht-tms-dropdown__arrow {
+  width: 10px;
+  height: 5px;
+  fill: var(--tms-selector-color);
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transition: transform .2s linear;
+  transform: translateY(-50%);
+
+  // override theme styles
+  path {
+    fill: var(--tms-selector-color);
+  }
+
+  &.ht-tms-expanded {
+    transform: translateY(-50%) rotate(-180deg);
+  }
+
+  .ht-tms--float-bottom & {
+    transform: translateY(-50%) rotate(-180deg);
+  }
+
+  .ht-tms--float-bottom &.ht-tms-expanded {
+    transform: translateY(-50%) rotate(0);
+  }
+}
+
+.ht-tms-dropdown__list {
+  list-style: none;
+  margin: 0;
+  position: absolute;
+  left: 0;
+  top: -1px;
+  background-color: transparent;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: opacity .2s cubic-bezier(0, 0, 0.38, 0.9), max-height .5s cubic-bezier(0, 0, 0.38, 0.9);
+
+  .ht-tms--float-bottom & {
+    top: auto;
+    bottom: 43px; // magic number the height of the selector
+  }
+
+  .ht-tms--float-right & {
+    left: auto;
+    right: 0;
+  }
+
+  .ht-tms--float-left & {
+    left: 0;
+    right: auto;
+  }
+}
+
+.ht-tms-dropdown__list-container {
+  position: relative;
+}
+
+.ht-tms-dropdown__list-item {
+  padding: 2px 25px 2px 12px;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  grid-template-rows: 30px;
+  grid-gap: 10px;
+  align-items: center;
+  color: var(--tms-selector-color);
+  background-color: rgba(var(--tms-selector-background-color-rgb), var(--tms-selector-background-opacity));
+  text-align: left;
+  list-style-position: inside;
+  white-space: nowrap;
+
+  &:first-child {
+    /* additional 4px */
+    padding-top: 6px;
+  }
+
+  &:last-child {
+    /* additional 4px */
+    padding-bottom: 6px;
+  }
+
+  img {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    width: 30px;
+    max-width: initial;
+    border-radius: 0;
+  }
+}
+
+@supports not (display: grid) {
+  .ht-tms-dropdown__list-item img {
+    display: inline-block;
+    margin-right: 2px;
+    position: relative;
+    top: 2px;
+  }
+}
+
+.ht-tms-dropdown__list-item:hover,
+.ht-tms-dropdown__list-item:focus {
+  filter: brightness(1.1);
+  color: var(--tms-selector-color);
+}
+
+.ht-tms-dropdown__list-item__label {
+  width: 76px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .ht-tms-dropdown--language-code & {
+    width: 45px;
+  }
+}
+
+@media (max-width: 450px) {
+  .ht-tms-dropdown__list-item__label {
+    width: 66px;
+
+    .ht-tms-dropdown--language-code & {
+      width: 37px;
+    }
+  }
+}
+
+.ht-tms-dropdown__selected {
+  border: 1px solid #e0e0e0;
+}
+
+.ht-tms-dropdown__selected:focus {
+  outline: 1px solid #ffffff;
+}
+
+.ht-tms-dropdown__hide-flag .ht-tms-dropdown__list-item {
+  grid-template-columns: 1fr;
+}
+
+.ht-tms-open {
+  opacity: 1;
+  overflow: auto;
+  max-height: 300px;
+}
+
+@media (max-width: 450px) {
+  .ht-tms-dropdown {
+    font-size: 12px;
+  }
+
+  .ht-tms-dropdown__list-item {
+    padding: 2px 27px 2px 9px;
+    grid-template-columns: 25px 1fr;
+    grid-template-rows: 25px;
+    grid-gap: 6px;
+  }
+
+  .ht-tms-dropdown__list-item img {
+    width: 25px;
+  }
+}
