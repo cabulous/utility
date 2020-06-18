@@ -292,3 +292,43 @@ export function setFocus(element = null, tabFocus = false) {
     }
 }
 
+export function getElementTagName(element) {
+    if (!is.element(element)) {
+        return "";
+    }
+
+    return element.tagName.toLowerCase();
+}
+
+export function getElementByXPath(path) {
+    return (new XPathEvaluator())
+        .evaluate(path, document.documentElement, null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+        .singleNodeValue;
+}
+
+// Recursively get the XPath to a DOM node
+// eslint-disable-next-line consistent-return
+export function getXPathTo(element) {
+    if (element.id !== '') {
+        return `id("${element.id}")`;
+    }
+
+    if (element === document.body)
+        return element.tagName;
+
+    let ix = 0;
+    const siblings = element.parentNode.childNodes;
+
+    for (let i = 0; i < siblings.length; i += 1) {
+        const sibling = siblings[i];
+
+        if (sibling === element) {
+            return `${getXPathTo(element.parentNode)}/${element.tagName}[${ix + 1}]`;
+        }
+
+        if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
+            ix += 1;
+        }
+    }
+}
