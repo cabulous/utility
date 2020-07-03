@@ -91,8 +91,47 @@ export function isThankYouPage() {
 }
 
 export function isHomepage(aPath) {
+    // home, meta = {"page":{"pageType":"home"}};
+    // Free: Narrative, Debut, Jumpstart, Venture, Boundless, Simple, Brooklyn, Pop, Supply, Minimal
+    // Paid: Reach, Modular, Motion, Loft, Split, Empire, Local, Venue, Editorial, Handy, Trademark, Capital, Vogue, Flow, Lorenza, Launch, Ira, Palo Alto, Maker, Label, Pipeline, Colors, Kagami, District, Elda, Kingdom, Grid, Showtime, Focal, Pacific, California, Icon, Parallax, Showcase, Alchemy, Startup, Testament, Blockshop, Retina, Mr Parker, Providence, Symmetry, Atlantic, Vantage, Mobilia, Editions, Masonry, Envy, Responsive, Expression, Fashionopolism
+    // Wild: Turbo, Ella, MyShop
+    // Sunrise demo missing meta tag
+    let pageType;
+    try {
+        pageType = meta.page.pageType;
+    } catch (e) {
+        // console.log(e);
+    }
+
+    if (!is.nullOrUndefined(pageType)) {
+        if (pageType === 'home') {
+            return true;
+        } else if (
+            pageType === 'collections' ||
+            pageType === 'collection' ||
+            pageType === 'product'
+        ) {
+            return false;
+        }
+    }
+
+    const hints = [
+        // Free: Narrative, Debut, Jumpstart, Venture, Boundless, Simple, Brooklyn, Pop, Supply, Minimal
+        // Paid: Galleria, Modular, Motion, Loft, Split, Venue, Editorial, Trademark, Capital, Vogue, Flow, Lorenza, Launch, Ira, Palo Alto, Label, Pipeline, Colors, Kagami, District, Elda, Kingdom, Grid, Showtime, Focal, Pacific, California, Showcase, Alchemy, Startup, Blockshop, Symmetry, Atlantic, Editions, Masonry, Envy
+        'body.template-index',
+        // Paid: Sunrise
+        'body#index',
+        // Don't use div.index-section as an indicator. Motion theme product page has it
+    ];
+
+    for (let i = 0; i < hints.length; i++) {
+        const element = document.querySelector(hints[i]);
+        if (!is.nullOrUndefined(element)) {
+            return true;
+        }
+    }
+
     const path = aPath || window.location.pathname;
     const locale = getLocale(path);
-
     return path === '/' || path === `/${locale}` || path === `/${locale}/`;
 }
