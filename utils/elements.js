@@ -2,333 +2,435 @@
 // Element utils
 // ==========================================================================
 
-import {toggleListener} from "./events";
-import is from "./is";
-import {extend} from "./objects";
+import { toggleListener } from './events';
+import is from './is';
+import { extend } from './objects';
 
 // Wrap a element
 export function wrap(elements, wrapper) {
-    // Convert 'elements' to an array, if necessary.
-    const targets = elements.length ? elements : [elements];
+  // Convert 'elements' to an array, if necessary.
+  const targets = elements.length ? elements : [elements];
 
-    // Loops backwards to preview having to clone the wrapper
-    // on the first element (see 'child' below)
-    Array.from(targets)
-        .reverse()
-        .forEach((element, index) => {
-            const child = index > 0 ? wrapper.cloneNode(true) : wrapper;
-            // Cache the current parent and sibling.
-            const parent = element.parentNode;
-            const sibling = element.nextSibling;
+  // Loops backwards to preview having to clone the wrapper
+  // on the first element (see 'child' below)
+  Array.from(targets)
+    .reverse()
+    .forEach((element, index) => {
+      const child = index > 0 ? wrapper.cloneNode(true) : wrapper;
+      // Cache the current parent and sibling.
+      const parent = element.parentNode;
+      const sibling = element.nextSibling;
 
-            // Wrap the element
-            // (is automatically removed from its current parent).
-            child.appendChild(element);
+      // Wrap the element
+      // (is automatically removed from its current parent).
+      child.appendChild(element);
 
-            // If the element had a sibling, insert the wrapper before
-            // the sibling to maintain the HTML structure;
-            // otherwise, just append it to the parent.
-            if (sibling) {
-                parent.insertBefore(child, sibling);
-            } else {
-                parent.appendChild(child);
-            }
-        })
+      // If the element had a sibling, insert the wrapper before
+      // the sibling to maintain the HTML structure;
+      // otherwise, just append it to the parent.
+      if (sibling) {
+        parent.insertBefore(child, sibling);
+      } else {
+        parent.appendChild(child);
+      }
+    });
 }
 
 // Set attributes
 export function setAttributes(element, attributes) {
-    if (!is.element(element) || is.empty(attributes)) {
-        return;
-    }
+  if (!is.element(element) || is.empty(attributes)) {
+    return;
+  }
 
-    // Assume null and undefined attributes should be left out.
-    // Setting them would otherwise convert them to "null" and "undefined".
-    Object.entries(attributes)
-        .filter(([, value]) => !is.nullOrUndefined(value))
-        .forEach(([key, value]) => element.setAttribute(key, value));
+  // Assume null and undefined attributes should be left out.
+  // Setting them would otherwise convert them to "null" and "undefined".
+  Object.entries(attributes)
+    .filter(([, value]) => !is.nullOrUndefined(value))
+    .forEach(([key, value]) => element.setAttribute(key, value));
+}
+
+export function removeAttributes(element, attributes) {
+  if (!is.element(element) || is.empty(attributes)) {
+    return;
+  }
+
+  // Assume null and undefined attributes should be left out.
+  // Setting them would otherwise convert them to "null" and "undefined".
+  Object.entries(attributes)
+    .filter(([, value]) => !is.nullOrUndefined(value))
+    .forEach(([key]) => element.removeAttribute(key));
 }
 
 // Create a Document Fragment
 export function createElement(type, attributes, text, isSvgType) {
-    // Create a new <element>
-    let element;
+  // Create a new <element>
+  let element;
 
-    if (isSvgType) {
-        element = document.createElementNS("http://www.w3.org/2000/svg", type);
-    } else {
-        element = document.createElement(type);
-    }
+  if (isSvgType) {
+    element = document.createElementNS('http://www.w3.org/2000/svg', type);
+  } else {
+    element = document.createElement(type);
+  }
 
-    // Set all passed attributes
-    if (is.object(attributes)) {
-        setAttributes(element, attributes);
-    }
+  // Set all passed attributes
+  if (is.object(attributes)) {
+    setAttributes(element, attributes);
+  }
 
-    // Add text node
-    if (is.string(text)) {
-        element.innerText = text;
-    }
+  // Add text node
+  if (is.string(text)) {
+    element.innerText = text;
+  }
 
-    // Return built element
-    return element;
+  // Return built element
+  return element;
 }
 
 // Insert an element after another
 export function insertAfter(element, target) {
-    if (!is.element(element) || !is.element(target)) {
-        return;
-    }
+  if (!is.element(element) || !is.element(target)) {
+    return;
+  }
 
-    target.parentNode.insertBefore(element, target.nextSibling);
+  target.parentNode.insertBefore(element, target.nextSibling);
 }
 
 // Insert a Document Fragment
 export function insertElement(type, parent, attributes, text) {
-    if (!is.element(parent)) {
-        return;
-    }
+  if (!is.element(parent)) {
+    return;
+  }
 
-    parent.appendChild(createElement(type, attributes, text));
+  parent.appendChild(createElement(type, attributes, text));
 }
 
 // Remove element(s)
 export function removeElement(element) {
-    if (is.nodeList(element) || is.array(element)) {
-        Array.from(element).forEach(removeElement);
-        return;
-    }
+  if (is.nodeList(element) || is.array(element)) {
+    Array.from(element).forEach(removeElement);
+    return;
+  }
 
-    if (!is.element(element) || !is.element(element.parentNode)) {
-        return;
-    }
+  if (!is.element(element) || !is.element(element.parentNode)) {
+    return;
+  }
 
-    element.parentNode.removeChild(element);
+  element.parentNode.removeChild(element);
 }
 
 // Remove all child elements
 export function emptyElement(element) {
-    if (!is.element(element)) {
-        return;
-    }
+  if (!is.element(element)) {
+    return;
+  }
 
-    let {length} = element.childNodes;
+  let { length } = element.childNodes;
 
-    while (length > 0) {
-        element.removeChild(element.lastChild);
-        length -= 1;
-    }
+  while (length > 0) {
+    element.removeChild(element.lastChild);
+    length -= 1;
+  }
 }
 
 // Replace element
 export function replaceElement(newChild, oldChild) {
-    if (!is.element(oldChild) || !is.element(oldChild.parentNode) || !is.element(newChild)) {
-        return null;
-    }
+  if (!is.element(oldChild) || !is.element(oldChild.parentNode) ||
+    !is.element(newChild)) {
+    return null;
+  }
 
-    oldChild.parentNode.replaceChild(newChild, oldChild);
+  oldChild.parentNode.replaceChild(newChild, oldChild);
 
-    return newChild;
+  return newChild;
 }
 
 // Get an attribute object from a string selector
 export function getAttributesFromSelector(sel, existingAttributes) {
-    // For example:
-    // '.test' to { class: 'test' }
-    // '#test' to { id: 'test' }
-    // '[data-test="test"]' to { 'data-test': 'test' }
+  // For example:
+  // '.test' to { class: 'test' }
+  // '#test' to { id: 'test' }
+  // '[data-test="test"]' to { 'data-test': 'test' }
 
-    if (!is.string(sel) || is.empty(sel)) {
-        return {};
+  if (!is.string(sel) || is.empty(sel)) {
+    return {};
+  }
+
+  const attributes = {};
+  const existing = extend({}, existingAttributes);
+
+  sel.split(',').forEach(s => {
+    // Remove whitespace
+    const selector = s.trim();
+    const className = selector.replace('.', '');
+    const stripped = selector.replace(/[\[\]]/g, '');
+    // Get the parts and value
+    const parts = stripped.split('=');
+    const [key] = parts;
+    const value = parts.length > 1 ? parts[1].replace(/["']/g, '') : '';
+    // Get the first character
+    const start = selector.charAt(0);
+
+    if (start === '.') {
+      // Add to existing classname
+      if (is.string(existing.class)) {
+        attributes.class = `${existing.class} ${className}`;
+      } else {
+        attributes.class = className;
+      }
+    } else if (start === '#') {
+      // ID selector
+      attributes.id = selector.replace('#', '');
+    } else if (start === '[') {
+      // Attribute selector
+      attributes[key] = value;
     }
+  });
 
-    const attributes = {};
-    const existing = extend({}, existingAttributes);
-
-    sel.split(',').forEach(s => {
-        // Remove whitespace
-        const selector = s.trim();
-        const className = selector.replace('.', '');
-        const stripped = selector.replace(/[\[\]]/g, '');
-        // Get the parts and value
-        const parts = stripped.split('=');
-        const [key] = parts;
-        const value = parts.length > 1 ? parts[1].replace(/["']/g, '') : '';
-        // Get the first character
-        const start = selector.charAt(0);
-
-        if (start === '.') {
-            // Add to existing classname
-            if (is.string(existing.class)) {
-                attributes.class = `${existing.class} ${className}`;
-            } else {
-                attributes.class = className;
-            }
-        } else if (start === '#') {
-            // ID selector
-            attributes.id = selector.replace('#', '');
-        } else if (start === '[') {
-            // Attribute selector
-            attributes[key] = value;
-        }
-    });
-
-    return extend(existing, attributes);
+  return extend(existing, attributes);
 }
 
 // Toggle hidden
 export function toggleHidden(element, hidden) {
-    if (!is.element(element)) {
-        return;
-    }
+  if (!is.element(element)) {
+    return;
+  }
 
-    let hide = hidden;
+  let hide = hidden;
 
-    if (!is.boolean(hide)) {
-        hide = !element.hidden;
-    }
+  if (!is.boolean(hide)) {
+    hide = !element.hidden;
+  }
 
-    // eslint-disable-next-line no-param-reassign
-    element.hidden = hide;
+  // eslint-disable-next-line no-param-reassign
+  element.hidden = hide;
 }
 
 // Mirror Element.classList.toggle, with IE compatibility for "force" argument
 export function toggleClass(element, className, force) {
-    if (is.nodeList(element)) {
-        return Array.from(element).map(e => toggleClass(e, className, force));
+  if (is.nodeList(element)) {
+    return Array.from(element).map(e => toggleClass(e, className, force));
+  }
+
+  if (is.element(element)) {
+    let method = 'toggle';
+    if (typeof force !== 'undefined') {
+      method = force ? 'add' : 'remove';
     }
 
-    if (is.element(element)) {
-        let method = 'toggle';
-        if (typeof force !== 'undefined') {
-            method = force ? 'add' : 'remove';
-        }
+    element.classList[method](className);
+    return element.classList.contains(className);
+  }
 
-        element.classList[method](className);
-        return element.classList.contains(className);
-    }
-
-    return false;
+  return false;
 }
 
 // Has class name
 export function hasClass(element, className) {
-    return is.element(element) && element.classList.contains(className);
+  return is.element(element) && element.classList.contains(className);
 }
 
 // Element matches selector
 export function matches(element, selector) {
-    const prototype = {Element};
+  const prototype = { Element };
 
-    function match() {
-        return Array.from(document.querySelectorAll(selector)).includes(this);
-    }
+  function match() {
+    return Array.from(document.querySelectorAll(selector)).includes(this);
+  }
 
-    const method =
-        prototype.matches ||
-        prototype.webkitMatchesSelector ||
-        prototype.mozMatchesSelector ||
-        prototype.msMatchesSelector ||
-        match;
+  const method =
+    prototype.matches ||
+    prototype.webkitMatchesSelector ||
+    prototype.mozMatchesSelector ||
+    prototype.msMatchesSelector ||
+    match;
 
-    return method.call(element, selector);
+  return method.call(element, selector);
 }
 
 // Find all elements
 export function getElements(selector) {
-    return this.elements.container.querySelectorAll(selector);
+  return this.elements.container.querySelectorAll(selector);
 }
 
 // Find a single element
 export function getElement(selector) {
-    return this.elements.container.querySelector(selector);
+  return this.elements.container.querySelector(selector);
+}
+
+// Find the closest element
+export function getClosestElement(targetElement, selectors) {
+  return targetElement.closest(selectors);
 }
 
 // Trap focus inside container
 export function trapFocus(element = null, toggle = false) {
-    if (!is.element(element)) {
-        return;
+  if (!is.element(element)) {
+    return;
+  }
+
+  const focusable = getElement.call(this,
+    'button:not(:disabled), input:not(:disabled), [tabindex]');
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  const trap = event => {
+    // Bail if not tab key or not fullscreen
+    if (event.key !== 'Tab') {
+      return;
     }
 
-    const focusable = getElement.call(this, 'button:not(:disabled), input:not(:disabled), [tabindex]');
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
+    // Get the current focused element
+    const focused = document.activeElement;
 
-    const trap = event => {
-        // Bail if not tab key or not fullscreen
-        if (event.key !== 'Tab') {
-            return;
-        }
+    if (focused === last && !event.shiftKey) {
+      // Move focus to first element that can be tabbed if Shift isn't used
+      first.focus();
+      event.preventDefault();
+    } else if (focused === first && event.shiftKey) {
+      // Move focus to last element that can be tabbed if Shift is used
+      last.focus();
+      event.preventDefault();
+    }
+  };
 
-        // Get the current focused element
-        const focused = document.activeElement;
-
-        if (focused === last && !event.shiftKey) {
-            // Move focus to first element that can be tabbed if Shift isn't used
-            first.focus();
-            event.preventDefault();
-        } else if (focused === first && event.shiftKey) {
-            // Move focus to last element that can be tabbed if Shift is used
-            last.focus();
-            event.preventDefault();
-        }
-    };
-
-    toggleListener.call(this, this.elements.container, 'keydown', trap, toggle, false);
+  toggleListener.call(this, this.elements.container, 'keydown', trap, toggle,
+    false);
 }
 
 // Set focus and tab focus class
 export function setFocus(element = null, tabFocus = false) {
-    if (!is.element(element)) {
-        return;
-    }
+  if (!is.element(element)) {
+    return;
+  }
 
-    // Set regular focus
-    element.focus({preventScroll: true});
+  // Set regular focus
+  element.focus({ preventScroll: true });
 
-    // If we want to mimic keyboard focus via tab
-    if (tabFocus) {
-        toggleClass(element, this.config.classNames.tabFocus);
-    }
+  // If we want to mimic keyboard focus via tab
+  if (tabFocus) {
+    toggleClass(element, this.config.classNames.tabFocus);
+  }
 }
 
+// Get element tag name
 export function getElementTagName(element) {
-    if (!is.element(element)) {
-        return "";
-    }
+  if (!is.element(element)) {
+    return '';
+  }
 
-    return element.tagName.toLowerCase();
+  return element.tagName.toLowerCase();
 }
 
+/**
+ * Find the first DOM occurrence based on a XPath
+ * @param {String} path
+ * @return {Node|null}
+ */
 export function getElementByXPath(path) {
-    return (new XPathEvaluator())
-        .evaluate(path, document.documentElement, null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE, null)
-        .singleNodeValue;
+  return document.evaluate(path, document, null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 }
 
 // Recursively get the XPath to a DOM node
 // eslint-disable-next-line consistent-return
 export function getXPathTo(element) {
-    if (element.id !== '') {
-        return `id("${element.id}")`;
+  // if (element.id !== '')
+  //     return `id("${element.id}")`;
+
+  if (element === document.body)
+    return element.tagName;
+
+  let ix = 0;
+  const siblings = element.parentNode.childNodes;
+
+  for (let i = 0; i < siblings.length; i += 1) {
+    const sibling = siblings[i];
+
+    if (sibling === element) {
+
+      // Use ID if there is one
+      if (element.id !== '') {
+        return `${getXPathTo(
+          element.parentNode)}/${element.tagName}[@id="${element.id}"]`;
+      }
+
+      return `${getXPathTo(element.parentNode)}/${element.tagName}[${ix + 1}]`;
     }
 
-    if (element === document.body)
-        return element.tagName;
-
-    let ix = 0;
-    const siblings = element.parentNode.childNodes;
-
-    for (let i = 0; i < siblings.length; i += 1) {
-        const sibling = siblings[i];
-
-        if (sibling === element) {
-            return `${getXPathTo(element.parentNode)}/${element.tagName}[${ix + 1}]`;
-        }
-
-        if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
-            ix += 1;
-        }
+    if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
+      ix += 1;
     }
+  }
+}
+
+export function getInlineStyles(element) {
+  if (!is.element(element)) {
+    return '';
+  }
+
+  return element.style.cssText;
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {Object} styles
+ * @return {boolean}
+ */
+export function setInlineStyles(element, styles) {
+  if (!is.element(element)) {
+    return false;
+  }
+
+  const anElement = element;
+  Object.keys(styles).forEach(key => {
+    anElement.style[key] = styles[key];
+  });
+
+  return true;
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {string} property
+ * @return {boolean}
+ */
+export function removeAnInlineStyle(element, property) {
+  if (!is.element(element)) {
+    return false;
+  }
+
+  element.style.removeProperty(property);
+
+  return true;
+}
+
+/**
+ * @param {HTMLButtonElement} element
+ * @return {boolean}
+ */
+export function isDisabled(element) {
+  if (!is.element(element)) {
+    return false;
+  }
+
+  if (is.nullOrUndefined(element.disabled)) {
+    return false;
+  }
+
+  return element.disabled;
+}
+
+/**
+ * @param {HTMLButtonElement} element
+ * @return {boolean}
+ */
+export function disable(element) {
+  if (!is.element(element)) {
+    return false;
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  element.disabled = true;
+
+  return true;
 }
